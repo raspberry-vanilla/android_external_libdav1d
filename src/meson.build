@@ -302,7 +302,7 @@ foreach bitdepth : dav1d_bitdepths
 endforeach
 
 # The final dav1d library
-if host_machine.system() == 'windows'
+if (host_machine.system() == 'windows' or host_machine.system() == 'android')
     dav1d_soversion = ''
 else
     dav1d_soversion = dav1d_api_version_major
