@@ -1,0 +1,345 @@
+// Copyright 2023 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+package {
+    default_applicable_licenses: ["external_libdav1d_license"],
+}
+
+license {
+    name: "external_libdav1d_license",
+    visibility: [":__subpackages__"],
+    license_kinds: [
+        "SPDX-license-identifier-Apache-2.0",
+    ],
+    license_text: [
+        "LICENSE",
+    ],
+}
+
+bug_component_id = 324837
+
+fuzz_email_cc = ["richardxie@google.com"]
+
+libdav1d_local_include_dirs = [
+    ".",
+    "include",
+    "include/common",
+    "include/dav1d",
+    "src",
+]
+
+libdav1d_ccflags = [
+
+    //"-O0",
+    //"-g",
+    "-Wall",
+    "-Werror",
+    "-Wextra",
+    "-Wno-error=unused-parameter",
+    "-Winvalid-pch",
+    "-Wundef",
+    "-Werror=vla",
+    "-Wno-missing-field-initializers",
+    "-Wno-incompatible-pointer-types",
+    "-DCONFIG_LOG=0",
+    "-DTRIM_DSP_FUNCTIONS=0",
+    "-D_FILE_OFFSET_BITS=64",
+    "-D_ISOC99_SOURCE",
+    "-fPIC",
+    "-std=c99",
+    "-ffast-math",
+]
+
+cc_defaults {
+    name: "libdav1d_defaults",
+    host_supported: true,
+    vendor_available: true,
+
+    export_include_dirs: [
+        "include",
+    ],
+
+    arch: {
+
+        arm64: {
+            local_include_dirs: libdav1d_local_include_dirs + [
+                "src/arm",
+                "config/arm64",
+            ],
+            srcs: [
+                    "src/*.c",
+                    "src/arm/cpu.c",
+                    "src/arm/64/*.S",
+                ],
+        },
+
+        arm: {
+            local_include_dirs: libdav1d_local_include_dirs + [
+                "src/arm",
+                "config/arm32",
+            ],
+            srcs: [
+                    "src/*.c",
+                    "src/arm/cpu.c",
+                    "src/arm/32/*.S",
+                ],
+        },
+
+        x86_64: {
+            local_include_dirs: libdav1d_local_include_dirs + [
+                "src/x86",
+                "config/x86_64",
+            ],
+            srcs: [
+                    "src/*.c",
+                    "src/x86/cpu.c",
+                ],
+        },
+
+        x86: {
+             local_include_dirs: libdav1d_local_include_dirs + [
+                "src/x86",
+                "config/x86_32",
+            ],
+            srcs: [
+                    "src/*.c",
+                    "src/x86/cpu.c",
+                ],
+        },
+
+    },
+
+    min_sdk_version: "29",
+    apex_available: [
+        "//apex_available:platform",
+        "com.android.media.swcodec",
+    ],
+}
+
+cc_library_static {
+    name: "libdav1d_8bit",
+
+    cflags: libdav1d_ccflags + [
+        "-DBITDEPTH=8",
+    ],
+
+    defaults: [
+        "libdav1d_defaults",
+    ],
+}
+
+
+cc_library_static {
+    name: "libdav1d_16bit",
+
+    cflags: libdav1d_ccflags + [
+        "-DBITDEPTH=16",
+    ],
+
+     defaults: [
+        "libdav1d_defaults",
+    ],
+}
+
+
+dav1d_local_include_dirs = [
+    ".",
+    "include",
+    "include/common",
+    "include/dav1d",
+    "src",
+    "tools",
+    "tools/input",
+    "tools/output",
+    "tests/libfuzzer",
+]
+
+
+cc_fuzz {
+    name: "dav1d_fuzzer",
+    host_supported: true,
+
+    cflags: [
+       //"-O0",
+       //"-g",
+       "-Wall",
+       "-Werror",
+       "-Wextra",
+    ],
+
+    arch: {
+        arm64: {
+            local_include_dirs: dav1d_local_include_dirs + [
+                "config/arm64",
+            ],
+
+        },
+        arm: {
+            local_include_dirs: dav1d_local_include_dirs + [
+                "config/arm32",
+            ],
+
+
+        },
+        x86_64: {
+            local_include_dirs: dav1d_local_include_dirs + [
+                "config/x86_64",
+            ],
+
+        },
+        x86: {
+             local_include_dirs: dav1d_local_include_dirs + [
+                "config/x86_32",
+            ],
+
+        },
+    },
+
+    srcs: [
+        "tests/libfuzzer/dav1d_fuzzer.c",
+    ],
+
+    static_libs: [
+        "libdav1d_8bit",
+        "libdav1d_16bit",
+    ],
+
+    corpus: ["testdata/*"],
+
+    fuzz_config: {
+        cc: fuzz_email_cc,
+        componentid: bug_component_id,
+    },
+
+}
+
+cc_fuzz {
+    name: "dav1d_fuzzer_mt",
+    host_supported: true,
+
+    cflags: [
+        //-O0",
+        //"-g",
+       "-Wall",
+       "-Werror",
+       "-Wextra",
+       "-DDAV1D_MT_FUZZING=1"
+    ],
+
+    arch: {
+        arm64: {
+            local_include_dirs: dav1d_local_include_dirs + [
+                "config/arm64",
+            ],
+
+        },
+        arm: {
+            local_include_dirs: dav1d_local_include_dirs + [
+                "config/arm32",
+            ],
+
+
+        },
+        x86_64: {
+            local_include_dirs: dav1d_local_include_dirs + [
+                "config/x86_64",
+            ],
+
+        },
+        x86: {
+             local_include_dirs: dav1d_local_include_dirs + [
+                "config/x86_32",
+            ],
+
+        },
+    },
+
+    srcs: [
+        "tests/libfuzzer/dav1d_fuzzer.c",
+    ],
+
+    static_libs: [
+        "libdav1d_8bit",
+        "libdav1d_16bit",
+    ],
+
+    corpus: ["testdata/*"],
+
+    fuzz_config: {
+        cc: fuzz_email_cc,
+        componentid: bug_component_id,
+    },
+
+}
+
+cc_binary {
+    name: "dav1d",
+
+    cflags: [
+        //"-O0",
+        //"-g",
+        "-Wall",
+        "-Werror",
+        "-Wextra",
+        "-Wno-error=unused-parameter",
+        "-DTRIM_DSP_FUNCTIONS=0",
+        "-DENDIANNESS_BIG=0",
+        "-DHAVE_XXHASH_H=0",
+        "-DCONFIG_LOG=0",
+    ],
+
+    arch: {
+        arm64: {
+            local_include_dirs: dav1d_local_include_dirs + [
+                "config/arm64",
+            ],
+
+        },
+        arm: {
+            local_include_dirs: dav1d_local_include_dirs + [
+                "config/arm32",
+            ],
+        },
+        x86_64: {
+            local_include_dirs: dav1d_local_include_dirs + [
+                "config/x86_64",
+            ],
+
+        },
+        x86: {
+             local_include_dirs: dav1d_local_include_dirs + [
+                "config/x86_32",
+            ],
+        },
+    },
+
+    srcs: [
+        "tools/dav1d.c",
+        "tools/dav1d_cli_parse.c",
+        "tools/input/*.c",
+        "tools/output/*.c"
+    ],
+
+    exclude_srcs: [
+        "tools/output/xxhash.c",
+    ],
+
+    static_libs: [
+        "libdav1d_8bit",
+        "libdav1d_16bit",
+    ],
+}
+
+

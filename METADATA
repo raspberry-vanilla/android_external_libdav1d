@@ -1,0 +1,21 @@
+name: "libdav1d"
+description:
+    "An AV1 cross-platform decoder, open-source, and focused on speed and correctness."
+
+third_party {
+  url {
+    type: HOMEPAGE
+    value: "https://code.videolan.org/videolan/dav1d/"
+  }
+  url {
+    type: GIT
+    value: "https://code.videolan.org/videolan/dav1d.git"
+  }
+  version: "1.2.0"
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2023
+    month: 4
+    day: 28
+  }
+}

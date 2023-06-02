@@ -1,0 +1,5 @@
+This dav1d decoder (external/libdav1d) is experimental; it is not yet intended
+to be used on production devices.
+
+This decoder should not be configured into any production Android device
+that is intended to be shipped.
