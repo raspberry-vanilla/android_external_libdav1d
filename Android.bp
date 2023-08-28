@@ -28,7 +28,7 @@ license {
     ],
 }
 
-bug_component_id = 324837
+bug_component_id = 25690
 
 fuzz_email_cc = ["richardxie@google.com"]
 
