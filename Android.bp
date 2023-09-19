@@ -121,6 +121,16 @@ cc_defaults {
 
     },
 
+    sanitize: {
+        integer_overflow: true,
+        misc_undefined: ["bounds"],
+        cfi: true,
+        config: {
+            cfi_assembly_support: true,
+        },
+        blocklist: "libdav1d_blocklist.txt",
+    },
+
     min_sdk_version: "29",
     apex_available: [
         "//apex_available:platform",
@@ -207,6 +217,16 @@ cc_fuzz {
         },
     },
 
+    sanitize: {
+        integer_overflow: true,
+        misc_undefined: ["bounds"],
+        cfi: true,
+        config: {
+            cfi_assembly_support: true,
+        },
+        blocklist: "libdav1d_blocklist.txt",
+    },
+
     srcs: [
         "tests/libfuzzer/dav1d_fuzzer.c",
     ],
@@ -266,6 +286,16 @@ cc_fuzz {
         },
     },
 
+    sanitize: {
+        integer_overflow: true,
+        misc_undefined: ["bounds"],
+        cfi: true,
+        config: {
+            cfi_assembly_support: true,
+        },
+        blocklist: "libdav1d_blocklist.txt",
+    },
+
     srcs: [
         "tests/libfuzzer/dav1d_fuzzer.c",
     ],
@@ -323,6 +353,16 @@ cc_binary {
                 "config/x86_32",
             ],
         },
+    },
+
+    sanitize: {
+        integer_overflow: true,
+        misc_undefined: ["bounds"],
+        cfi: true,
+        config: {
+            cfi_assembly_support: true,
+        },
+        blocklist: "libdav1d_blocklist.txt",
     },
 
     srcs: [
