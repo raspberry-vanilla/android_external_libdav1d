@@ -17,17 +17,23 @@
 
 #define ARCH_X86_64 0
 
-#define HAVE_AVX512ICL 0
-
 #define CONFIG_16BPC 1
 
 #define CONFIG_8BPC 1
 
+#define CONFIG_LOG 0
+
+#define ENDIANNESS_BIG 0
+
 #define HAVE_ASM 0
 
-#define HAVE_GETOPT_H 1
+#define HAVE_C11_GENERIC 1
+
+#define HAVE_CLOCK_GETTIME 1
 
 #define HAVE_POSIX_MEMALIGN 1
 
 #define HAVE_UNISTD_H 1
+
+#define TRIM_DSP_FUNCTIONS 1
 

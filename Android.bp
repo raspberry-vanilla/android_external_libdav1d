@@ -53,8 +53,6 @@ libdav1d_ccflags = [
     "-Werror=vla",
     "-Wno-missing-field-initializers",
     "-Wno-incompatible-pointer-types",
-    "-DCONFIG_LOG=0",
-    "-DTRIM_DSP_FUNCTIONS=0",
     "-D_FILE_OFFSET_BITS=64",
     "-D_ISOC99_SOURCE",
     "-fPIC",
@@ -324,10 +322,8 @@ cc_binary {
         "-Werror",
         "-Wextra",
         "-Wno-error=unused-parameter",
-        "-DTRIM_DSP_FUNCTIONS=0",
         "-DENDIANNESS_BIG=0",
         "-DHAVE_XXHASH_H=0",
-        "-DCONFIG_LOG=0",
     ],
 
     arch: {

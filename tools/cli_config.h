@@ -5,5 +5,5 @@
 
 #pragma once
 
-#define HAVE_CLOCK_GETTIME 1
+#define HAVE_XXHASH_H 0
 
