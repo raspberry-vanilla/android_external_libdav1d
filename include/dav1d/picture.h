@@ -34,6 +34,10 @@
 #include "common.h"
 #include "headers.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Number of bytes to align AND pad picture memory buffers by, so that SIMD
  * implementations can over-read by a few bytes, and use aligned read/write
  * instructions. */
@@ -87,7 +91,7 @@ typedef struct Dav1dPicture {
      */
     size_t n_itut_t35;
 
-    uintptr_t reserved[3]; ///< reserved for future use
+    uintptr_t reserved[4]; ///< reserved for future use
 
     struct Dav1dRef *frame_hdr_ref; ///< Dav1dFrameHeader allocation origin
     struct Dav1dRef *seq_hdr_ref; ///< Dav1dSequenceHeader allocation origin
@@ -145,5 +149,9 @@ typedef struct Dav1dPicAllocator {
  * Release reference to a picture.
  */
 DAV1D_API void dav1d_picture_unref(Dav1dPicture *p);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #endif /* DAV1D_PICTURE_H */
