@@ -117,6 +117,14 @@ cc_defaults {
                 ],
         },
 
+        riscv64: {
+            local_include_dirs: libdav1d_local_include_dirs + [
+                "config/riscv64",
+            ],
+            srcs: [
+                    "src/*.c",
+                ],
+        },
     },
 
     sanitize: {
@@ -213,6 +221,12 @@ cc_fuzz {
             ],
 
         },
+        riscv64: {
+            local_include_dirs: dav1d_local_include_dirs + [
+                "config/riscv64",
+            ],
+
+        },
     },
 
     sanitize: {
@@ -282,6 +296,12 @@ cc_fuzz {
             ],
 
         },
+        riscv64: {
+            local_include_dirs: dav1d_local_include_dirs + [
+                "config/riscv64",
+            ],
+
+        },
     },
 
     sanitize: {
@@ -348,6 +368,12 @@ cc_binary {
              local_include_dirs: dav1d_local_include_dirs + [
                 "config/x86_32",
             ],
+        },
+        riscv64: {
+            local_include_dirs: dav1d_local_include_dirs + [
+                "config/riscv64",
+            ],
+
         },
     },
 
