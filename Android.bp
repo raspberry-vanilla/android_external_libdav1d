@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package {
     default_applicable_licenses: ["external_libdav1d_license"],
 }
@@ -28,38 +27,6 @@ license {
     ],
 }
 
-bug_component_id = 25690
-
-fuzz_email_cc = ["richardxie@google.com"]
-
-libdav1d_local_include_dirs = [
-    ".",
-    "include",
-    "include/common",
-    "include/dav1d",
-    "src",
-]
-
-libdav1d_ccflags = [
-
-    //"-O0",
-    //"-g",
-    "-Wall",
-    "-Werror",
-    "-Wextra",
-    "-Wno-error=unused-parameter",
-    "-Winvalid-pch",
-    "-Wundef",
-    "-Werror=vla",
-    "-Wno-missing-field-initializers",
-    "-Wno-incompatible-pointer-types",
-    "-D_FILE_OFFSET_BITS=64",
-    "-D_ISOC99_SOURCE",
-    "-fPIC",
-    "-std=c99",
-    "-ffast-math",
-]
-
 cc_defaults {
     name: "libdav1d_defaults",
     host_supported: true,
@@ -69,61 +36,148 @@ cc_defaults {
         "include",
     ],
 
-    arch: {
+    local_include_dirs: [
+        "include",
+        "include/common",
+        "include/dav1d",
+        "src",
+    ],
 
+    cflags: [
+        "-D_FILE_OFFSET_BITS=64",
+        "-D_ISOC99_SOURCE",
+        "-Wall",
+        "-Werror",
+        "-Werror=vla",
+        "-Wextra",
+        "-Winvalid-pch",
+        "-Wno-error=unused-parameter",
+        "-Wno-incompatible-pointer-types",
+        "-Wno-missing-field-initializers",
+        "-Wundef",
+        "-fPIC",
+        "-ffast-math",
+        "-std=c99",
+    ],
+    srcs: [
+        "src/cdef_apply_tmpl.c",
+        "src/cdef_tmpl.c",
+        "src/cdf.c",
+        "src/cpu.c",
+        "src/data.c",
+        "src/decode.c",
+        "src/dequant_tables.c",
+        "src/fg_apply_tmpl.c",
+        "src/filmgrain_tmpl.c",
+        "src/getbits.c",
+        "src/intra_edge.c",
+        "src/ipred_prepare_tmpl.c",
+        "src/ipred_tmpl.c",
+        "src/itx_1d.c",
+        "src/itx_tmpl.c",
+        "src/lf_apply_tmpl.c",
+        "src/lf_mask.c",
+        "src/lib.c",
+        "src/log.c",
+        "src/loopfilter_tmpl.c",
+        "src/looprestoration_tmpl.c",
+        "src/lr_apply_tmpl.c",
+        "src/mc_tmpl.c",
+        "src/mem.c",
+        "src/msac.c",
+        "src/obu.c",
+        "src/pal.c",
+        "src/picture.c",
+        "src/qm.c",
+        "src/recon_tmpl.c",
+        "src/ref.c",
+        "src/refmvs.c",
+        "src/scan.c",
+        "src/tables.c",
+        "src/thread_task.c",
+        "src/warpmv.c",
+        "src/wedge.c",
+    ],
+
+    arch: {
         arm64: {
-            local_include_dirs: libdav1d_local_include_dirs + [
-                "src/arm",
+            local_include_dirs: [
                 "config/arm64",
+                "src/arm",
             ],
             srcs: [
-                    "src/*.c",
-                    "src/arm/cpu.c",
-                    "src/arm/64/*.S",
-                ],
+                "src/arm/64/cdef.S",
+                "src/arm/64/cdef16.S",
+                "src/arm/64/filmgrain.S",
+                "src/arm/64/filmgrain16.S",
+                "src/arm/64/ipred.S",
+                "src/arm/64/ipred16.S",
+                "src/arm/64/itx.S",
+                "src/arm/64/itx16.S",
+                "src/arm/64/loopfilter.S",
+                "src/arm/64/loopfilter16.S",
+                "src/arm/64/looprestoration.S",
+                "src/arm/64/looprestoration16.S",
+                "src/arm/64/looprestoration_common.S",
+                "src/arm/64/mc.S",
+                "src/arm/64/mc16.S",
+                "src/arm/64/msac.S",
+                "src/arm/64/refmvs.S",
+                "src/arm/cpu.c",
+            ],
         },
 
         arm: {
-            local_include_dirs: libdav1d_local_include_dirs + [
-                "src/arm",
+            local_include_dirs: [
                 "config/arm32",
+                "src/arm",
             ],
             srcs: [
-                    "src/*.c",
-                    "src/arm/cpu.c",
-                    "src/arm/32/*.S",
-                ],
+                "src/arm/32/cdef.S",
+                "src/arm/32/cdef16.S",
+                "src/arm/32/filmgrain.S",
+                "src/arm/32/filmgrain16.S",
+                "src/arm/32/ipred.S",
+                "src/arm/32/ipred16.S",
+                "src/arm/32/itx.S",
+                "src/arm/32/itx16.S",
+                "src/arm/32/loopfilter.S",
+                "src/arm/32/loopfilter16.S",
+                "src/arm/32/looprestoration.S",
+                "src/arm/32/looprestoration16.S",
+                "src/arm/32/looprestoration_common.S",
+                "src/arm/32/mc.S",
+                "src/arm/32/mc16.S",
+                "src/arm/32/msac.S",
+                "src/arm/32/refmvs.S",
+                "src/arm/cpu.c",
+            ],
         },
 
         x86_64: {
-            local_include_dirs: libdav1d_local_include_dirs + [
-                "src/x86",
+            local_include_dirs: [
                 "config/x86_64",
+                "src/x86",
             ],
             srcs: [
-                    "src/*.c",
-                    "src/x86/cpu.c",
-                ],
+                "src/x86/cpu.c",
+            ],
         },
 
         x86: {
-             local_include_dirs: libdav1d_local_include_dirs + [
-                "src/x86",
+            local_include_dirs: [
                 "config/x86_32",
+                "src/x86",
             ],
             srcs: [
-                    "src/*.c",
-                    "src/x86/cpu.c",
-                ],
+                "src/x86/cpu.c",
+            ],
         },
 
         riscv64: {
-            local_include_dirs: libdav1d_local_include_dirs + [
+            local_include_dirs: [
                 "config/riscv64",
             ],
-            srcs: [
-                    "src/*.c",
-                ],
         },
     },
 
@@ -147,98 +201,90 @@ cc_defaults {
 cc_library_static {
     name: "libdav1d_8bit",
 
-    cflags: libdav1d_ccflags + [
-        "-DBITDEPTH=8",
-    ],
-
     defaults: [
         "libdav1d_defaults",
     ],
-}
 
+    cflags: [
+        "-DBITDEPTH=8",
+    ],
+}
 
 cc_library_static {
     name: "libdav1d_16bit",
 
-    cflags: libdav1d_ccflags + [
-        "-DBITDEPTH=16",
+    defaults: [
+        "libdav1d_defaults",
     ],
 
-     defaults: [
-        "libdav1d_defaults",
+    cflags: [
+        "-DBITDEPTH=16",
     ],
 }
 
-
-dav1d_local_include_dirs = [
-    ".",
-    "include",
-    "include/common",
-    "include/dav1d",
-    "src",
-    "tools",
-    "tools/input",
-    "tools/output",
-    "tests/libfuzzer",
-]
-
-
-cc_fuzz {
-    name: "dav1d_fuzzer",
+cc_defaults {
+    name: "dav1d_test_defaults",
     host_supported: true,
 
     cflags: [
-       //"-O0",
-       //"-g",
-       "-Wall",
-       "-Werror",
-       "-Wextra",
+        "-Wno-error=unused-parameter",
+    ],
+
+    local_include_dirs: [
+        "include",
+        "include/common",
+        "include/dav1d",
+        "src",
+        "tests/libfuzzer",
+        "tools",
+        "tools/input",
+        "tools/output",
     ],
 
     arch: {
         arm64: {
-            local_include_dirs: dav1d_local_include_dirs + [
+            local_include_dirs: [
                 "config/arm64",
             ],
 
         },
         arm: {
-            local_include_dirs: dav1d_local_include_dirs + [
+            local_include_dirs: [
                 "config/arm32",
             ],
 
-
         },
         x86_64: {
-            local_include_dirs: dav1d_local_include_dirs + [
+            local_include_dirs: [
                 "config/x86_64",
             ],
 
         },
         x86: {
-             local_include_dirs: dav1d_local_include_dirs + [
+            local_include_dirs: [
                 "config/x86_32",
             ],
 
         },
         riscv64: {
-            local_include_dirs: dav1d_local_include_dirs + [
+            local_include_dirs: [
                 "config/riscv64",
             ],
 
         },
     },
 
-    sanitize: {
-        integer_overflow: true,
-        misc_undefined: ["bounds"],
-        cfi: true,
-        config: {
-            cfi_assembly_support: true,
-        },
-        blocklist: "libdav1d_blocklist.txt",
-    },
+    static_libs: [
+        "libdav1d_8bit",
+        "libdav1d_16bit",
+    ],
+}
 
+cc_defaults {
+    name: "dav1d_fuzzer_defaults",
+    defaults: [
+        "dav1d_test_defaults",
+    ],
     srcs: [
         "tests/libfuzzer/dav1d_fuzzer.c",
     ],
@@ -248,160 +294,47 @@ cc_fuzz {
         "libdav1d_16bit",
     ],
 
-    corpus: ["testdata/*"],
-
     fuzz_config: {
-        cc: fuzz_email_cc,
-        componentid: bug_component_id,
+        cc: ["kyslov@google.com"],
+        componentid: 25690,
     },
+}
 
+cc_fuzz {
+    name: "dav1d_fuzzer",
+    defaults: [
+        "dav1d_fuzzer_defaults",
+    ],
 }
 
 cc_fuzz {
     name: "dav1d_fuzzer_mt",
-    host_supported: true,
+    defaults: [
+        "dav1d_fuzzer_defaults",
+    ],
 
     cflags: [
-        //-O0",
-        //"-g",
-       "-Wall",
-       "-Werror",
-       "-Wextra",
-       "-DDAV1D_MT_FUZZING=1"
+        "-DDAV1D_MT_FUZZING=1",
     ],
-
-    arch: {
-        arm64: {
-            local_include_dirs: dav1d_local_include_dirs + [
-                "config/arm64",
-            ],
-
-        },
-        arm: {
-            local_include_dirs: dav1d_local_include_dirs + [
-                "config/arm32",
-            ],
-
-
-        },
-        x86_64: {
-            local_include_dirs: dav1d_local_include_dirs + [
-                "config/x86_64",
-            ],
-
-        },
-        x86: {
-             local_include_dirs: dav1d_local_include_dirs + [
-                "config/x86_32",
-            ],
-
-        },
-        riscv64: {
-            local_include_dirs: dav1d_local_include_dirs + [
-                "config/riscv64",
-            ],
-
-        },
-    },
-
-    sanitize: {
-        integer_overflow: true,
-        misc_undefined: ["bounds"],
-        cfi: true,
-        config: {
-            cfi_assembly_support: true,
-        },
-        blocklist: "libdav1d_blocklist.txt",
-    },
-
-    srcs: [
-        "tests/libfuzzer/dav1d_fuzzer.c",
-    ],
-
-    static_libs: [
-        "libdav1d_8bit",
-        "libdav1d_16bit",
-    ],
-
-    corpus: ["testdata/*"],
-
-    fuzz_config: {
-        cc: fuzz_email_cc,
-        componentid: bug_component_id,
-    },
-
 }
 
 cc_binary {
     name: "dav1d",
-
-    cflags: [
-        //"-O0",
-        //"-g",
-        "-Wall",
-        "-Werror",
-        "-Wextra",
-        "-Wno-error=unused-parameter",
-        "-DENDIANNESS_BIG=0",
-        "-DHAVE_XXHASH_H=0",
+    defaults: [
+        "dav1d_test_defaults",
     ],
-
-    arch: {
-        arm64: {
-            local_include_dirs: dav1d_local_include_dirs + [
-                "config/arm64",
-            ],
-
-        },
-        arm: {
-            local_include_dirs: dav1d_local_include_dirs + [
-                "config/arm32",
-            ],
-        },
-        x86_64: {
-            local_include_dirs: dav1d_local_include_dirs + [
-                "config/x86_64",
-            ],
-
-        },
-        x86: {
-             local_include_dirs: dav1d_local_include_dirs + [
-                "config/x86_32",
-            ],
-        },
-        riscv64: {
-            local_include_dirs: dav1d_local_include_dirs + [
-                "config/riscv64",
-            ],
-
-        },
-    },
-
-    sanitize: {
-        integer_overflow: true,
-        misc_undefined: ["bounds"],
-        cfi: true,
-        config: {
-            cfi_assembly_support: true,
-        },
-        blocklist: "libdav1d_blocklist.txt",
-    },
 
     srcs: [
         "tools/dav1d.c",
         "tools/dav1d_cli_parse.c",
-        "tools/input/*.c",
-        "tools/output/*.c"
-    ],
-
-    exclude_srcs: [
-        "tools/output/xxhash.c",
-    ],
-
-    static_libs: [
-        "libdav1d_8bit",
-        "libdav1d_16bit",
+        "tools/input/annexb.c",
+        "tools/input/input.c",
+        "tools/input/ivf.c",
+        "tools/input/section5.c",
+        "tools/output/md5.c",
+        "tools/output/null.c",
+        "tools/output/output.c",
+        "tools/output/y4m2.c",
+        "tools/output/yuv.c",
     ],
 }
-
-
