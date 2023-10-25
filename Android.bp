@@ -59,71 +59,12 @@ cc_defaults {
         "-ffast-math",
         "-std=c99",
     ],
-    srcs: [
-        "src/cdef_apply_tmpl.c",
-        "src/cdef_tmpl.c",
-        "src/cdf.c",
-        "src/cpu.c",
-        "src/data.c",
-        "src/decode.c",
-        "src/dequant_tables.c",
-        "src/fg_apply_tmpl.c",
-        "src/filmgrain_tmpl.c",
-        "src/getbits.c",
-        "src/intra_edge.c",
-        "src/ipred_prepare_tmpl.c",
-        "src/ipred_tmpl.c",
-        "src/itx_1d.c",
-        "src/itx_tmpl.c",
-        "src/lf_apply_tmpl.c",
-        "src/lf_mask.c",
-        "src/lib.c",
-        "src/log.c",
-        "src/loopfilter_tmpl.c",
-        "src/looprestoration_tmpl.c",
-        "src/lr_apply_tmpl.c",
-        "src/mc_tmpl.c",
-        "src/mem.c",
-        "src/msac.c",
-        "src/obu.c",
-        "src/pal.c",
-        "src/picture.c",
-        "src/qm.c",
-        "src/recon_tmpl.c",
-        "src/ref.c",
-        "src/refmvs.c",
-        "src/scan.c",
-        "src/tables.c",
-        "src/thread_task.c",
-        "src/warpmv.c",
-        "src/wedge.c",
-    ],
 
     arch: {
         arm64: {
             local_include_dirs: [
                 "config/arm64",
                 "src/arm",
-            ],
-            srcs: [
-                "src/arm/64/cdef.S",
-                "src/arm/64/cdef16.S",
-                "src/arm/64/filmgrain.S",
-                "src/arm/64/filmgrain16.S",
-                "src/arm/64/ipred.S",
-                "src/arm/64/ipred16.S",
-                "src/arm/64/itx.S",
-                "src/arm/64/itx16.S",
-                "src/arm/64/loopfilter.S",
-                "src/arm/64/loopfilter16.S",
-                "src/arm/64/looprestoration.S",
-                "src/arm/64/looprestoration16.S",
-                "src/arm/64/looprestoration_common.S",
-                "src/arm/64/mc.S",
-                "src/arm/64/mc16.S",
-                "src/arm/64/msac.S",
-                "src/arm/64/refmvs.S",
-                "src/arm/cpu.c",
             ],
         },
 
@@ -132,26 +73,6 @@ cc_defaults {
                 "config/arm32",
                 "src/arm",
             ],
-            srcs: [
-                "src/arm/32/cdef.S",
-                "src/arm/32/cdef16.S",
-                "src/arm/32/filmgrain.S",
-                "src/arm/32/filmgrain16.S",
-                "src/arm/32/ipred.S",
-                "src/arm/32/ipred16.S",
-                "src/arm/32/itx.S",
-                "src/arm/32/itx16.S",
-                "src/arm/32/loopfilter.S",
-                "src/arm/32/loopfilter16.S",
-                "src/arm/32/looprestoration.S",
-                "src/arm/32/looprestoration16.S",
-                "src/arm/32/looprestoration_common.S",
-                "src/arm/32/mc.S",
-                "src/arm/32/mc16.S",
-                "src/arm/32/msac.S",
-                "src/arm/32/refmvs.S",
-                "src/arm/cpu.c",
-            ],
         },
 
         x86_64: {
@@ -159,18 +80,12 @@ cc_defaults {
                 "config/x86_64",
                 "src/x86",
             ],
-            srcs: [
-                "src/x86/cpu.c",
-            ],
         },
 
         x86: {
             local_include_dirs: [
                 "config/x86_32",
                 "src/x86",
-            ],
-            srcs: [
-                "src/x86/cpu.c",
             ],
         },
 
@@ -198,27 +113,164 @@ cc_defaults {
     ],
 }
 
+libdav1d_tmpl_srcs = [
+    "src/cdef_apply_tmpl.c",
+    "src/cdef_tmpl.c",
+    "src/fg_apply_tmpl.c",
+    "src/filmgrain_tmpl.c",
+    "src/ipred_prepare_tmpl.c",
+    "src/ipred_tmpl.c",
+    "src/itx_tmpl.c",
+    "src/lf_apply_tmpl.c",
+    "src/loopfilter_tmpl.c",
+    "src/looprestoration_tmpl.c",
+    "src/lr_apply_tmpl.c",
+    "src/mc_tmpl.c",
+    "src/recon_tmpl.c",
+]
+
 cc_library_static {
     name: "libdav1d_8bit",
-
     defaults: [
         "libdav1d_defaults",
     ],
-
     cflags: [
         "-DBITDEPTH=8",
     ],
+    srcs: libdav1d_tmpl_srcs,
+
+    arch: {
+        arm64: {
+            srcs: [
+                "src/arm/64/cdef.S",
+                "src/arm/64/filmgrain.S",
+                "src/arm/64/ipred.S",
+                "src/arm/64/itx.S",
+                "src/arm/64/loopfilter.S",
+                "src/arm/64/looprestoration.S",
+                "src/arm/64/mc.S",
+            ],
+        },
+
+        arm: {
+            srcs: [
+                "src/arm/32/cdef.S",
+                "src/arm/32/filmgrain.S",
+                "src/arm/32/ipred.S",
+                "src/arm/32/itx.S",
+                "src/arm/32/loopfilter.S",
+                "src/arm/32/looprestoration.S",
+                "src/arm/32/mc.S",
+            ],
+        },
+    },
 }
 
 cc_library_static {
     name: "libdav1d_16bit",
+    defaults: [
+        "libdav1d_defaults",
+    ],
+    cflags: [
+        "-DBITDEPTH=16",
+    ],
+    srcs: libdav1d_tmpl_srcs,
 
+    arch: {
+        arm64: {
+            srcs: [
+                "src/arm/64/cdef16.S",
+                "src/arm/64/filmgrain16.S",
+                "src/arm/64/ipred16.S",
+                "src/arm/64/itx16.S",
+                "src/arm/64/loopfilter16.S",
+                "src/arm/64/looprestoration16.S",
+                "src/arm/64/mc16.S",
+            ],
+        },
+
+        arm: {
+            srcs: [
+                "src/arm/32/cdef16.S",
+                "src/arm/32/filmgrain16.S",
+                "src/arm/32/ipred16.S",
+                "src/arm/32/itx16.S",
+                "src/arm/32/loopfilter16.S",
+                "src/arm/32/looprestoration16.S",
+                "src/arm/32/mc16.S",
+            ],
+        },
+    },
+}
+
+cc_library_static {
+    name: "libdav1d",
     defaults: [
         "libdav1d_defaults",
     ],
 
-    cflags: [
-        "-DBITDEPTH=16",
+    srcs: [
+        "src/cdf.c",
+        "src/cpu.c",
+        "src/data.c",
+        "src/decode.c",
+        "src/dequant_tables.c",
+        "src/getbits.c",
+        "src/intra_edge.c",
+        "src/itx_1d.c",
+        "src/lf_mask.c",
+        "src/lib.c",
+        "src/log.c",
+        "src/mem.c",
+        "src/msac.c",
+        "src/obu.c",
+        "src/pal.c",
+        "src/picture.c",
+        "src/qm.c",
+        "src/ref.c",
+        "src/refmvs.c",
+        "src/scan.c",
+        "src/tables.c",
+        "src/thread_task.c",
+        "src/warpmv.c",
+        "src/wedge.c",
+    ],
+
+    arch: {
+        arm64: {
+            srcs: [
+                "src/arm/64/looprestoration_common.S",
+                "src/arm/64/msac.S",
+                "src/arm/64/refmvs.S",
+                "src/arm/cpu.c",
+            ],
+        },
+
+        arm: {
+            srcs: [
+                "src/arm/32/looprestoration_common.S",
+                "src/arm/32/msac.S",
+                "src/arm/32/refmvs.S",
+                "src/arm/cpu.c",
+            ],
+        },
+
+        x86_64: {
+            srcs: [
+                "src/x86/cpu.c",
+            ],
+        },
+
+        x86: {
+            srcs: [
+                "src/x86/cpu.c",
+            ],
+        },
+    },
+
+    whole_static_libs: [
+        "libdav1d_8bit",
+        "libdav1d_16bit",
     ],
 }
 
@@ -275,8 +327,7 @@ cc_defaults {
     },
 
     static_libs: [
-        "libdav1d_8bit",
-        "libdav1d_16bit",
+        "libdav1d",
     ],
 }
 
@@ -287,11 +338,6 @@ cc_defaults {
     ],
     srcs: [
         "tests/libfuzzer/dav1d_fuzzer.c",
-    ],
-
-    static_libs: [
-        "libdav1d_8bit",
-        "libdav1d_16bit",
     ],
 
     fuzz_config: {
