@@ -48,3 +48,6 @@ fun:read_golomb
 
 #src/decode.c:1107:65: unsigned integer overflow: 4294967295 + 1 cannot be represented in type 'unsigned int'
 fun:decode_b
+
+#src/lib.c:206:51: unsigned integer overflow: 0 - 1 cannot be represented in type 'unsigned int'
+fun:dav1d_open
