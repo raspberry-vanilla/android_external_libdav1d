@@ -26,6 +26,7 @@
  */
 #include "tests/checkasm/checkasm.h"
 
+#include <errno.h>
 #include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -35,9 +36,9 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#define COLOR_RED    FOREGROUND_RED
-#define COLOR_GREEN  FOREGROUND_GREEN
-#define COLOR_YELLOW (FOREGROUND_RED|FOREGROUND_GREEN)
+#ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
+#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x04
+#endif
 #else
 #include <unistd.h>
 #include <signal.h>
@@ -49,10 +50,11 @@
 #ifdef __APPLE__
 #include <mach/mach_time.h>
 #endif
-#define COLOR_RED    1
-#define COLOR_GREEN  2
-#define COLOR_YELLOW 3
 #endif
+
+#define COLOR_RED    31
+#define COLOR_GREEN  32
+#define COLOR_YELLOW 33
 
 /* List of tests to invoke */
 static const struct {
@@ -241,48 +243,19 @@ int float_near_abs_eps_array_ulp(const float *const a, const float *const b,
 }
 
 /* Print colored text to stderr if the terminal supports it */
+static int use_printf_color;
 static void color_printf(const int color, const char *const fmt, ...) {
-    static int8_t use_color = -1;
     va_list arg;
 
-#ifdef _WIN32
-    static HANDLE con;
-    static WORD org_attributes;
-
-    if (use_color < 0) {
-        CONSOLE_SCREEN_BUFFER_INFO con_info;
-        con = GetStdHandle(STD_ERROR_HANDLE);
-        if (con && con != INVALID_HANDLE_VALUE &&
-            GetConsoleScreenBufferInfo(con, &con_info))
-        {
-            org_attributes = con_info.wAttributes;
-            use_color = 1;
-        } else
-            use_color = 0;
-    }
-    if (use_color)
-        SetConsoleTextAttribute(con, (org_attributes & 0xfff0) |
-                                (color & 0x0f));
-#else
-    if (use_color < 0) {
-        const char *const term = getenv("TERM");
-        use_color = term && strcmp(term, "dumb") && isatty(2);
-    }
-    if (use_color)
-        fprintf(stderr, "\x1b[%d;3%dm", (color & 0x08) >> 3, color & 0x07);
-#endif
+    if (use_printf_color)
+        fprintf(stderr, "\x1b[0;%dm", color);
 
     va_start(arg, fmt);
     vfprintf(stderr, fmt, arg);
     va_end(arg);
 
-    if (use_color) {
-#ifdef _WIN32
-        SetConsoleTextAttribute(con, org_attributes);
-#else
+    if (use_printf_color)
         fprintf(stderr, "\x1b[0m");
-#endif
-    }
 }
 
 /* Deallocate a tree */
@@ -462,6 +435,7 @@ checkasm_context checkasm_context_buf;
 /* Crash handling: attempt to catch crashes and handle them
  * gracefully instead of just aborting abruptly. */
 #ifdef _WIN32
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 static LONG NTAPI signal_handler(EXCEPTION_POINTERS *const e) {
     if (!state.catch_signals)
         return EXCEPTION_CONTINUE_SEARCH;
@@ -491,6 +465,7 @@ static LONG NTAPI signal_handler(EXCEPTION_POINTERS *const e) {
     checkasm_load_context();
     return EXCEPTION_CONTINUE_EXECUTION; /* never reached, but shuts up gcc */
 }
+#endif
 #else
 static void signal_handler(const int s) {
     if (state.catch_signals) {
@@ -567,6 +542,13 @@ static unsigned get_seed(void) {
 #endif
 }
 
+static int checkasm_strtoul(unsigned long *const dst, const char *const str, const int base) {
+    char *end;
+    errno = 0;
+    *dst = strtoul(str, &end, base);
+    return errno || end == str || *end;
+}
+
 int main(int argc, char *argv[]) {
     state.seed = get_seed();
 
@@ -612,15 +594,23 @@ int main(int argc, char *argv[]) {
         } else if (!strcmp(argv[1], "--verbose") || !strcmp(argv[1], "-v")) {
             state.verbose = 1;
         } else if (!strncmp(argv[1], "--affinity=", 11)) {
-            unsigned long affinity = strtoul(argv[1] + 11, NULL, 16);
+            const char *const s = argv[1] + 11;
+            unsigned long affinity;
+            if (checkasm_strtoul(&affinity, s, 16)) {
+                fprintf(stderr, "checkasm: invalid cpu affinity (%s)\n", s);
+                return 1;
+            }
 #ifdef _WIN32
+            int affinity_err;
+            HANDLE process = GetCurrentProcess();
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
             BOOL (WINAPI *spdcs)(HANDLE, const ULONG*, ULONG) =
                 (void*)GetProcAddress(GetModuleHandleW(L"kernel32.dll"), "SetProcessDefaultCpuSets");
-            HANDLE process = GetCurrentProcess();
-            int affinity_err;
-            if (spdcs) {
+            if (spdcs)
                 affinity_err = !spdcs(process, (ULONG[]){ affinity + 256 }, 1);
-            } else {
+            else
+#endif
+            {
                 if (affinity < sizeof(DWORD_PTR) * 8)
                     affinity_err = !SetProcessAffinityMask(process, (DWORD_PTR)1 << affinity);
                 else
@@ -649,7 +639,12 @@ int main(int argc, char *argv[]) {
             return 1;
 #endif
         } else {
-            state.seed = (unsigned) strtoul(argv[1], NULL, 10);
+            unsigned long seed;
+            if (checkasm_strtoul(&seed, argv[1], 10)) {
+                fprintf(stderr, "checkasm: unknown option (%s)\n", argv[1]);
+                return 1;
+            }
+            state.seed = (unsigned)seed;
         }
 
         argc--;
@@ -657,7 +652,7 @@ int main(int argc, char *argv[]) {
     }
 
 #if TRIM_DSP_FUNCTIONS
-    fprintf(stderr, "checkasm: reference functions unavailable\n");
+    fprintf(stderr, "checkasm: reference functions unavailable, reconfigure using '-Dtrim_dsp=false'\n");
     return 0;
 #endif
 
@@ -666,6 +661,12 @@ int main(int argc, char *argv[]) {
 #ifdef _WIN32
 #if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
     AddVectoredExceptionHandler(0, signal_handler);
+
+    HANDLE con = GetStdHandle(STD_ERROR_HANDLE);
+    DWORD con_mode = 0;
+    use_printf_color = con && con != INVALID_HANDLE_VALUE &&
+                       GetConsoleMode(con, &con_mode) &&
+                       SetConsoleMode(con, con_mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 #endif
 #else
     const struct sigaction sa = {
@@ -676,6 +677,9 @@ int main(int argc, char *argv[]) {
     sigaction(SIGFPE,  &sa, NULL);
     sigaction(SIGILL,  &sa, NULL);
     sigaction(SIGSEGV, &sa, NULL);
+
+    const char *const term = getenv("TERM");
+    use_printf_color = term && strcmp(term, "dumb") && isatty(2);
 #endif
 
 #ifdef readtime
