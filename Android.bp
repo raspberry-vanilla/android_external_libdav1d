@@ -203,7 +203,7 @@ cc_library_static {
     },
 }
 
-cc_library_static {
+cc_library {
     name: "libdav1d",
     defaults: [
         "libdav1d_defaults",
