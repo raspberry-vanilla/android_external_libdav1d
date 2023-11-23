@@ -88,12 +88,6 @@ cc_defaults {
                 "src/x86",
             ],
         },
-
-        riscv64: {
-            local_include_dirs: [
-                "config/riscv64",
-            ],
-        },
     },
 
     sanitize: {
@@ -315,12 +309,6 @@ cc_defaults {
         x86: {
             local_include_dirs: [
                 "config/x86_32",
-            ],
-
-        },
-        riscv64: {
-            local_include_dirs: [
-                "config/riscv64",
             ],
 
         },
