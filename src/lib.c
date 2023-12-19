@@ -50,9 +50,6 @@
 #include "src/thread_task.h"
 #include "src/wedge.h"
 
-// TODO(b/315538557): Temporarily disable multi-threading in film grain
-#define DISABLE_FG_MT 1
-
 static COLD void init_internal(void) {
     dav1d_init_cpu();
     dav1d_init_ii_wedge_masks();
@@ -499,7 +496,7 @@ int dav1d_apply_grain(Dav1dContext *const c, Dav1dPicture *const out,
     int res = dav1d_picture_alloc_copy(c, out, in->p.w, in);
     if (res < 0) goto error;
 
-    if (c->n_tc > 1 && !DISABLE_FG_MT) {
+    if (c->n_tc > 1) {
         dav1d_task_delayed_fg(c, out, in);
     } else {
         switch (out->p.bpc) {
