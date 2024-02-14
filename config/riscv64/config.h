@@ -9,13 +9,25 @@
 
 #define ARCH_ARM 0
 
+#define ARCH_LOONGARCH 0
+
+#define ARCH_LOONGARCH32 0
+
+#define ARCH_LOONGARCH64 0
+
 #define ARCH_PPC64LE 0
 
-#define ARCH_X86 1
+#define ARCH_RISCV 1
+
+#define ARCH_RV32 0
+
+#define ARCH_RV64 0
+
+#define ARCH_X86 0
 
 #define ARCH_X86_32 0
 
-#define ARCH_X86_64 1
+#define ARCH_X86_64 0
 
 #define CONFIG_16BPC 1
 
