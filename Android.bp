@@ -211,6 +211,7 @@ cc_library_static {
 
     srcs: [
         "src/cdf.c",
+        "src/ctx.c",
         "src/cpu.c",
         "src/data.c",
         "src/decode.c",
