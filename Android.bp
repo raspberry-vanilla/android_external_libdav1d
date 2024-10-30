@@ -157,6 +157,29 @@ cc_library_static {
 }
 
 cc_library_static {
+    name: "libdav1d_sve2",
+    defaults: [
+        "libdav1d_defaults",
+    ],
+    vendor_available: true,
+    visibility: ["//visibility:private"],
+
+    cflags: [
+        "-Xclang -target-feature",
+        // This comment prevents bpfmt from sorting the flags incorrectly.
+        "-Xclang +sve2",
+    ],
+
+    arch: {
+        arm64: {
+            srcs: [
+                "src/arm/64/mc16_sve.S",
+            ],
+        },
+    },
+}
+
+cc_library_static {
     name: "libdav1d_8bit",
     defaults: [
         "libdav1d_defaults",
@@ -300,6 +323,7 @@ cc_library_static {
         "libdav1d_8bit",
         "libdav1d_16bit",
         "libdav1d_dotprod_i8mm",
+        "libdav1d_sve2",
     ],
 }
 
