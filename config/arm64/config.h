@@ -29,6 +29,8 @@
 
 #define ARCH_X86_64 0
 
+#define AS_ARCH_LEVEL armv8.2-a
+
 #define CONFIG_16BPC 1
 
 #define CONFIG_8BPC 1
@@ -38,6 +40,8 @@
 #define CONFIG_MACOS_KPERF 0
 
 #define ENDIANNESS_BIG 0
+
+#define HAVE_ALIGNED_ALLOC 0
 
 #define HAVE_ASM 1
 
@@ -57,17 +61,37 @@
 
 #define HAVE_CLOCK_GETTIME 1
 
+#define HAVE_DLSYM 0
+
 #define HAVE_DOTPROD 0
+
+#define HAVE_ELF_AUX_INFO 0
 
 #define HAVE_GETAUXVAL 1
 
 #define HAVE_I8MM 0
 
+#define HAVE_IO_H 0
+
+#define HAVE_MEMALIGN 1
+
 #define HAVE_POSIX_MEMALIGN 1
+
+#define HAVE_PTHREAD_GETAFFINITY_NP 0
+
+#define HAVE_PTHREAD_NP_H 0
+
+#define HAVE_PTHREAD_SETAFFINITY_NP 0
+
+#define HAVE_PTHREAD_SETNAME_NP 1
+
+#define HAVE_PTHREAD_SET_NAME_NP 0
 
 #define HAVE_SVE 0
 
 #define HAVE_SVE2 0
+
+#define HAVE_SYS_TYPES_H 1
 
 #define HAVE_UNISTD_H 1
 
