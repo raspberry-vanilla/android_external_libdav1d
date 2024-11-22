@@ -130,6 +130,33 @@ libdav1d_tmpl_srcs = [
 ]
 
 cc_library_static {
+    name: "libdav1d_dotprod_i8mm",
+    defaults: [
+        "libdav1d_defaults",
+    ],
+    vendor_available: true,
+    visibility: ["//visibility:private"],
+
+    cflags: [
+        "-Xclang -target-feature",
+        // This comment prevents bpfmt from sorting the flags incorrectly.
+        "-Xclang +dotprod",
+        // This comment prevents bpfmt from sorting the flags incorrectly.
+        "-Xclang -target-feature",
+        // This comment prevents bpfmt from sorting the flags incorrectly.
+        "-Xclang +i8mm",
+    ],
+
+    arch: {
+        arm64: {
+            srcs: [
+                "src/arm/64/mc_dotprod.S",
+            ],
+        },
+    },
+}
+
+cc_library_static {
     name: "libdav1d_8bit",
     defaults: [
         "libdav1d_defaults",
@@ -272,6 +299,7 @@ cc_library_static {
     whole_static_libs: [
         "libdav1d_8bit",
         "libdav1d_16bit",
+        "libdav1d_dotprod_i8mm",
     ],
 }
 
